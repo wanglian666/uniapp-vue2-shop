@@ -1,5 +1,6 @@
 <template>
 	<view>
+		<my-search></my-search>
 		<view class="scroll-view-container">
 			<!-- 左侧的滚动视图区域 -->
 			<scroll-view class="left-scroll-view" scroll-y="true" :style="{height:windowHeight+'px'}">
@@ -47,7 +48,8 @@
 
 		onLoad() {
 			const windowInfo = uni.getWindowInfo();
-			this.windowHeight = windowInfo.windowHeight;
+			// 减去搜索框的高度得到可用区的高度
+			this.windowHeight = windowInfo.windowHeight - 50;
 			this.getCateList()
 		},
 		methods: {
