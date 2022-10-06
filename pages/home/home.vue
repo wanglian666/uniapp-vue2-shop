@@ -1,5 +1,9 @@
 <template>
 	<view>
+		<!-- 搜索 -->
+		<view class="search-box">
+			<my-search @click="gotoSearch"></my-search>
+		</view>
 		<!-- 轮播图 -->
 		<swiper indicator-dots autoplay circular interval="3000">
 			<swiper-item v-for="(item,index) in swiperList" :key="index">
@@ -85,6 +89,11 @@
 					})
 				})
 				this.floorList = res.message;
+			},
+			gotoSearch() {
+				uni.navigateTo({
+					url:'/subPackage/search/search'
+				})
 			}
 		}
 	}
@@ -131,5 +140,12 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-around;
+	}
+	
+	.search-box {
+		// 设置吸顶效果
+		position: sticky;
+		top: 0;
+		z-index: 999;
 	}
 </style>

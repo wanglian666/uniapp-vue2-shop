@@ -1,6 +1,6 @@
 <template>
 	<view>
-		<my-search></my-search>
+		<my-search @click="gotoSearch"></my-search>
 		<view class="scroll-view-container">
 			<!-- 左侧的滚动视图区域 -->
 			<scroll-view class="left-scroll-view" scroll-y="true" :style="{height:windowHeight+'px'}">
@@ -65,9 +65,17 @@
 				// 让 scrollTop 的值在 0 与 1 之间切换 让滚动条重置至顶部
 				this.scrollTop = this.scrollTop == 0 ? 1 : 0;
 			},
+			// 跳转到商品列表
 			gotoGoodsList(item) {
 				uni.navigateTo({
 					url:'/subPackage/goods_list/goods_list?cid=' + item.cat_id
+				})
+			},
+			// 跳转到搜索页面
+			gotoSearch() {
+				console.log('ok')
+				uni.navigateTo({
+					url:'/subPackage/search/search'
 				})
 			}
 
