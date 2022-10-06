@@ -85,7 +85,7 @@
 			handlerTag(item) {
 				// this.getSearchList(item);
 				uni.navigateTo({
-					url: '/subPackage/goods_details/goods_details?query=' + item
+					url:'/subPackage/goods_list/goods_list?query=' +item
 				})
 			}
 		},
