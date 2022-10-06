@@ -88,7 +88,7 @@
 		display: flex;
 
 		.left-scroll-view {
-			width: 120px;
+			width: 100px;
 
 			.left-scroll-view-item {
 				line-height: 60px;
