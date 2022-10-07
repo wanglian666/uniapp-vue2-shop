@@ -48,7 +48,9 @@
 		getNavListAPI,
 		getFloorListAPI
 	} from "../../api/homeAPI.js";
+	import tabBadge from "@/mixins/tabbar-badge.js.js"
 	export default {
+		mixins:[tabBadge],
 		data() {
 			return {
 				swiperList: [],

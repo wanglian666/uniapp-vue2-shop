@@ -36,9 +36,28 @@
 <script>
 	import {
 		getGoodsDetailsAPI
-	} from "@/api/detailsAPI.js"
+	} from "@/api/detailsAPI.js";
+	import {
+		mapMutations,
+		mapGetters
+	} from 'vuex'
 	export default {
-		data() {
+		computed: {
+			...mapGetters('m_cart', ['total'])
+		},
+		watch: {
+			// 动态统计购物车中商品的总数量
+			total: {
+				handler(newVal) {
+					const findResult = this.options.find((v) => v.text === '购物车')
+					if (findResult) {
+						findResult.info = newVal
+					}
+				},
+				immediate: true
+			}
+		},
+	data() {
 			return {
 				goodsDetailsObj: {},
 				options: [{
@@ -49,7 +68,7 @@
 				}, {
 					icon: 'cart',
 					text: '购物车',
-					info: 2
+					info: 0
 				}],
 				buttonGroup: [{
 						text: '加入购物车',
@@ -70,6 +89,7 @@
 			this.getGoodsDetails(goods_id);
 		},
 		methods: {
+			...mapMutations('m_cart', ['addToCart']),
 			async getGoodsDetails(goods_id) {
 				const res = await getGoodsDetailsAPI(goods_id);
 				res.message.goods_introduce = res.message.goods_introduce.replace(/<img/g,
@@ -88,12 +108,27 @@
 			},
 			// 跳转至购物车页面
 			onClick(e) {
-				if(e.content.text == "购物车") {
+				if (e.content.text == "购物车") {
 					uni.switchTab({
-						url:"/pages/cart/cart"
+						url: "/pages/cart/cart"
 					})
 				}
-			}
+			},
+			// 加入购物车
+			buttonClick(e) {
+				if (e.content.text == "加入购物车") {
+					const goodsObj = {
+						goods_id: this.goodsDetailsObj.goods_id,
+						goods_name: this.goodsDetailsObj.goods_name,
+						goods_price: this.goodsDetailsObj.goods_price,
+						goods_count: 1,
+						goods_small_logo: this.goodsDetailsObj.goods_small_logo,
+						goods_state: true
+					};
+					// 存储到store
+					this.addToCart(goodsObj);
+				}
+			},
 		}
 	}
 </script>
@@ -146,7 +181,7 @@
 		}
 
 	}
-	
+
 	.goods-nav {
 		position: fixed;
 		bottom: 0;

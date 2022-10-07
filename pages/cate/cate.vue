@@ -33,7 +33,9 @@
 	import {
 		getCateListAPI
 	} from "../../api/cateAPI.js"
+	import tabBadge from "@/mixins/tabbar-badge.js.js"
 	export default {
+		mixins:[tabBadge],
 		data() {
 			return {
 				// 当前设备的可用高度
