@@ -1,16 +1,8 @@
 <template>
 	<view class="goods-list-box">
-		<block v-for="(item,index) in goodsList" :key="index">
-			<view class="goods-item">
-				<view class="goods-left-box">
-					<image :src="item.goods_small_logo || defaultPic"></image>
-				</view>
-				<view class="goods-right-box">
-					<text class="goods-name">{{item.goods_name}}</text>
-					<text class="goods-price">￥{{item.goods_price}}</text>
-				</view>
-			</view>
-		</block>
+		<view v-for="(item,index) in goodsList" :key="index" @click="gotoDetails(item)">
+			<my-goods :item="item"></my-goods>
+		</view>
 
 	</view>
 </template>
@@ -19,6 +11,7 @@
 	import {
 		getGoodsListAPI
 	} from "../../api/goodsListAPI.js"
+	import {showMsg} from "../../utils/tools.js"
 	export default {
 		data() {
 			return {
@@ -30,8 +23,8 @@
 				},
 				goodsList: [],
 				total: 0,
-				// 默认的空图片
-				defaultPic: 'https://img3.doubanio.com/f/movie/8dd0c794499fe925ae2ae89ee30cd225750457b4/pics/movie/celebrity-default-medium.png'
+				// 节流阀
+				isLoading:false,
 			}
 		},
 		onLoad(options) {
@@ -40,43 +33,48 @@
 			this.getGoodsList();
 		},
 		methods: {
-			async getGoodsList() {
+			async getGoodsList(cb) {
+				// 正在发起网络请求
+				this.isLoading = true;
 				const res = await getGoodsListAPI(this.queryObj);
-				this.goodsList = res.message.goods;
+				// 为数据赋值：通过展开运算符的形式，进行新旧数据的拼接
+				this.goodsList = [...this.goodsList,...res.message.goods];
 				this.total = res.message.total;
+				// 网络请求结束
+				this.isLoading = false;
+				// 停止当前页面下拉刷新
+				cb && cb();
+			},
+			// 跳转至详情页
+			gotoDetails(item) {
+				uni.navigateTo({
+					url:"/subPackage/goods_details/goods_details?goods_id=" +item.goods_id
+				})
 			}
-
+		},
+		// 上拉触底加载数据事件
+		onReachBottom() {
+			// 判断数据是否加载完毕
+			if(this.queryObj.pagenum * this.queryObj.pagesize >= this.total) return showMsg("数据加载完毕！")
+			// 判断是否正在请求其它数据，如果是，则不发起额外的请求
+			if(this.isLoading) return
+			// pagenum +1
+			this.queryObj.pagenum += 1;
+			this.getGoodsList();			
+		},
+		// 下拉刷新
+		onPullDownRefresh() {
+			this.queryObj.pagenum = 1;
+			this.goodsList = [];
+			this.isLoading = false;
+			this.total = 0;
+			this.getGoodsList(() => {
+				uni.stopPullDownRefresh()
+			});
 		}
 	}
 </script>
 
 <style lang="scss">
-	.goods-item {
-		display: flex;
-		justify-content: space-between;
-		border-bottom: 1px solid #efefef;
-		padding: 15px 10px;
-		.goods-left-box {
-			margin-right: 10px;
-			image {
-				width: 100px;
-				height: 100px;
-			}
-		}
-
-		.goods-right-box {
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			flex: 1;
-			.goods-name {
-				font-size: 12px;
-			}
-
-			.goods-price {
-				color: red;
-				font-size: 18px;
-			}
-		}
-	}
+	
 </style>
