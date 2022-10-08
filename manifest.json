@@ -56,10 +56,13 @@
             "checkSiteMap" : true,
             "postcss" : false
         },
-        "usingComponents" : true
+        "usingComponents" : true,
+        "requiredPrivateInfos":["chooseAddress"]
+		
     },
     "mp-alipay" : {
         "usingComponents" : true
+		
     },
     "mp-baidu" : {
         "usingComponents" : true
