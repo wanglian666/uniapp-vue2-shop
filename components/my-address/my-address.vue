@@ -29,7 +29,10 @@
 	import {
 		mapState,
 		mapMutations
-	} from "vuex"
+	} from "vuex";
+	import {
+		showMsg
+	} from "@/utils/tools.js"
 	export default {
 		name: "my-address",
 		data() {
@@ -60,10 +63,44 @@
 
 					},
 					fail: (error) => {
+						console.log('error', error)
+						if (error && (error.errMsg === 'chooseAddress:fail auth deny' || error.errMsg ===
+								'chooseAddress:fail authorize no response')) {
+								// 通过调用这个函数，让用户重新授权
+							this.reAuth()
+						}
+					}
+				})
+			},
+			// 让用户重新授权
+			reAuth() {
+				uni.showModal({
+					content: "检测到您没打开地址权限，是否去设置打开？",
+					confirmText: "确认",
+					cancelText: "取消",
+					success: function(res) {
+						if (res.confirm) {
+							console.log('用户点击确定');
+							return uni.openSetting({
+								success: (settingResult) => {
+									console.log('settingResult',settingResult);
+									if (settingResult.authSetting['scope.address']) {
+										return showMsg('授权成功！请选择地址')
+									} else {
+										return showMsg('您取消了地址授权！')
+									}
+								}
+							})
+						} else if (res.cancel) {
+							console.log('用户点击取消');
+							return showMsg("您取消了地址授权！")
+						}
+					},
+					fail: (error) => {
 						return error
 					}
 				})
-			}
+			},
 		}
 	}
 </script>
